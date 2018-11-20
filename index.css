@@ -11,8 +11,10 @@
 
 .letznav-balloon-step {
     position: fixed;
-    width: 40px;
-    height: 40px;
+    width: 220px;
+    background: white;
+    height: 120px;
+    display: none;
 }
 
 /* #letznav-frame-player body *,

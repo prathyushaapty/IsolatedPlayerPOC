@@ -33,6 +33,7 @@ const dummyFlow = [{
 var currIdx = 0;
 
 function playFlow() {
+    currIdx = 0;
     console.info("Playing flow");
     displayStep(currIdx);
 }
@@ -40,21 +41,27 @@ function playFlow() {
 function displayStep(idx) {
     console.info('displaying step', idx);
     var stepData = dummyFlow[idx];
-    const elemToAttach = window.top.document.querySelector(stepData.elem);
-    const elemRect = elemToAttach.getBoundingClientRect();
     var balloonElem = window.top.document.querySelector(".letznav-balloon-step");
+    if (stepData) {
+        const elemToAttach = window.top.document.querySelector(stepData.elem);
+        const elemRect = elemToAttach.getBoundingClientRect();
 
-    var balloonHeading = window.top.document.querySelector('.letznav-step-heading');
-    balloonHeading.innerText = stepData.title;
+        var balloonHeading = window.top.document.querySelector('.letznav-step-heading');
+        balloonHeading.innerText = stepData.title;
 
-    var balloonDesc = window.top.document.querySelector('.letznav-step-description');
-    balloonDesc.innerText = stepData.desc;
+        var balloonDesc = window.top.document.querySelector('.letznav-step-description');
+        balloonDesc.innerText = stepData.desc;
 
-    // var playerFrame = window.top.document.querySelector('#letznav-frame-player');
-    // var playerFrameTop = playerFrame.getBoundingClientRect().top;
-    balloonElem.style.left = (elemRect.left + 10) + 'px';
-    balloonElem.style.top = (elemRect.top + 10) + 'px';
-    currIdx = currIdx + 1;
+        // var playerFrame = window.top.document.querySelector('#letznav-frame-player');
+        // var playerFrameTop = playerFrame.getBoundingClientRect().top;
+        balloonElem.style.display = 'block';
+        balloonElem.style.left = (elemRect.left + elemRect.width + 10) + 'px';
+        // balloonElem.style.top = (elemRect.top + 10) + 'px';
+        currIdx = currIdx + 1;
+    } else {
+        balloonElem.style.display = 'none';
+        //disable flow
+    }
 }
 
 function addListeners() {

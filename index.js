@@ -2,11 +2,9 @@ function createPlayerPanel() {
     var balloonNode = document.createElement('div');
     balloonNode.setAttribute('class', 'letznav-balloon-step');
     balloonNode.innerHTML = `
-    <div class="letznav-balloon-step">
         <div class="letznav-step-heading"></div>
         <div class="letznav-step-description"></div>
         <button class="letznav-balloon-next-btn"> next </button>
-    </div> 
     `;
     document.body.appendChild(balloonNode);
 

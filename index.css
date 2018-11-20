@@ -1,0 +1,21 @@
+#letznav-frame-player {
+    position: absolute;
+    background: rgb(61, 107, 190);
+    height: 60px;
+    width: 120px;
+    border-radius: 6px;
+    /* font-size: 32px; */
+    top: 90%;
+}
+
+
+.letznav-balloon-step {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+}
+
+/* #letznav-frame-player body *,
+#letznav-frame-player html * {
+    pointer-events: none;
+} */

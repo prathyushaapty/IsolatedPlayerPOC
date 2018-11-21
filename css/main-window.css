@@ -1,7 +1,7 @@
 #letznav-frame-player {
     position: absolute;
     background: rgb(61, 107, 190);
-    height: 15%;
+    height: 18%;
     width: 15%;
     border-radius: 6px;
     /* font-size: 32px; */
@@ -9,15 +9,102 @@
 }
 
 
-.letznav-balloon-step {
+/* .letznav-balloon-step {
     position: fixed;
     width: 220px;
     background: white;
     height: 120px;
     display: none;
+} */
+
+.letznav-balloon-next-btn {
+    width: 67px;
+    height: 30px;
+    margin-left: 74px;
+    margin-top: 11px;
+    background: rgb(61, 107, 190);
+    color: white;
+    font-size: 15px;
 }
 
-/* #letznav-frame-player body *,
-#letznav-frame-player html * {
-    pointer-events: none;
-} */
+
+.letznav-balloon-step {
+    position: fixed;
+    width: 140px;
+
+    height: auto;
+    /* min-height: 100px;
+    max-height: 400px; */
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    z-index: 3000;
+    /* margin: 3rem; */
+    display: none;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.letznav-balloon-step:before {
+    content: "";
+    vertical-align: middle;
+    margin: auto;
+    position: absolute;
+    display: block;
+    top: 15px;
+    left: 0;
+    bottom: calc(100% - 6px);
+    width: 12px;
+    height: 12px;
+    transform: rotate(315deg);
+    border: 1px solid;
+    border-color: #ccc transparent transparent #ccc;
+    background-color: white;
+    margin-left: -7px;
+}
+
+
+.letznav-badge-icon {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/assets/custom-icon-demo--help.svg');
+}
+
+.letznav-badge {
+    width: 20px;
+    height: 20px;
+    position: fixed;
+}
+
+.letznav-badge-hover-message {
+    position: relative;
+    width: 150px;
+    height: 30px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    z-index: 3000;
+    padding: 4px;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 8px;
+    margin-top: -20px;
+    margin-left: 34px;
+}
+
+.letznav-badge-hover-message:before {
+    content: "";
+    vertical-align: middle;
+    margin: auto;
+    position: absolute;
+    display: block;
+    left: 0;
+    top: 20px;
+    bottom: calc(100% - 6px);
+    width: 12px;
+    height: 12px;
+    transform: rotate(315deg);
+    border: 1px solid;
+    border-color: #ccc transparent transparent #ccc;
+    background-color: white;
+    margin-left: -7px;
+}

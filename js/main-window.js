@@ -49,3 +49,4 @@ function createPlayerPanel() {
 if (window.top === window) {
     createPlayerPanel();
 }
+

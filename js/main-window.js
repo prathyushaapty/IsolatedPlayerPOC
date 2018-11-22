@@ -12,6 +12,8 @@ function createBalloonNode() {
 function getPlayerHtml() {
     var cssUrl = chrome.extension.getURL('css/letznav-frame.css');
     var jsUrl = chrome.extension.getURL('js/letznav-frame.js');
+    var tetherUrl = chrome.extension.getURL('lib/tether.js');
+
 
     var idxHtml = `
         <!DOCTYPE html>
@@ -19,6 +21,7 @@ function getPlayerHtml() {
             <head> 
                 <link rel="stylesheet" href=${cssUrl}> 
                 <script type="text/javascript" src=${jsUrl}></script>
+                <script type="text/javascript" src=${tetherUrl}></script>
             </head>
             <body>
                 <div class="letznav-banner-message">letzNav Player</div>

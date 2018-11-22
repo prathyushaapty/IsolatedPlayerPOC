@@ -26,6 +26,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
@@ -41,6 +42,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
@@ -56,6 +58,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             }
@@ -75,6 +78,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
@@ -90,6 +94,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
@@ -105,6 +110,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             }
@@ -124,11 +130,12 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
             {
-                stepId: 5,
+                stepId: 8,
                 title: "frameflow3step2",
                 desc: "This is frameflow3step2",
                 elem: {
@@ -139,11 +146,12 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             },
             {
-                stepId: 6,
+                stepId: 9,
                 title: "frameflow3step3",
                 desc: "This is frameflow3step3",
                 elem: {
@@ -154,6 +162,7 @@ var flows = [{
                         left: "",
                         width: ""
                     },
+                    elNode: null,
                     identified: false
                 }
             }
@@ -174,6 +183,8 @@ var badges = [{
 ];
 var currIdx = 0;
 var currentFlowId;
+var popper;
+var tetherAttached = null;
 
 function playFlow(flowId) {
     currIdx = 0;
@@ -182,6 +193,13 @@ function playFlow(flowId) {
 }
 
 function updateStep(stepData) {
+    // if(popper) {
+    //     popper.destroy();
+    // }
+    if(tetherAttached) {
+    tetherAttached.destroy();
+    tetherAttached = null;
+    }
     if (stepData.elem.identified) {
         var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
         balloonElem.style.display = "block";
@@ -193,7 +211,23 @@ function updateStep(stepData) {
 
         var balloonDesc = window.top.document.querySelector('.letznav-step-description');
         balloonDesc.innerText = stepData.desc;
-        currIdx = currIdx + 1;
+        
+        // popper = new Popper(stepData.elem.elNode, balloonElem, {
+        //     placement: 'right'
+        // });
+        console.info('element', balloonElem);
+        console.info('**target', stepData.elem.elNode);
+        var letznavElementsData = window.top['letznav-elements-data'];
+        var targetEl = letznavElementsData.find(data => data.id === stepData.stepId);
+        if (targetEl && targetEl.elementNode) {
+            tetherAttached = new Tether({
+                element: balloonElem,
+                target: targetEl && targetEl.elementNode,
+                attachment: 'top left',
+                targetAttachment: 'top right'
+            });
+            currIdx = currIdx + 1;
+        }
     }
 }
 

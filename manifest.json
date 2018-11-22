@@ -22,8 +22,9 @@
     "web_accessible_resources": ["*", "letznav-frame.js", "letznav-player.html"],
     "content_scripts": [{
         "matches": ["http://111.93.27.187:8889/*"],
-        "js": ["js/main-window.js"],
+        "js": ["js/main-window.js", "js/iframe.js"],
         "css": ["css/main-window.css"],
-        "run_at": "document_idle"
+        "run_at": "document_idle",
+        "all_frames": true
     }]
 }

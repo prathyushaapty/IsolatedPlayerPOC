@@ -11,7 +11,7 @@ function getIframePath() {
 
 function updateElementPosition(elementData) {
     var currentPath = getIframePath();
-    if (elementData.iframePath === currentPath) {
+    if (window.top === window || elementData.iframePath === currentPath) {
         var boundingRect = getElementBoundingClientRect(elementData.selector);
         if (boundingRect) {
             elementData.position = {
@@ -19,8 +19,10 @@ function updateElementPosition(elementData) {
                 left: boundingRect.left,
                 width: boundingRect.width
             };
+            elementData.identified = true;
         }
     }
+    return elementData;
 }
 
 function sendMessageToParentFrame(toPost) {
@@ -34,15 +36,19 @@ function sendMessageToParentFrame(toPost) {
     }
 }
 
-function receiveForMessage(toPost) {
+function receiveForMessage() {
     window.addEventListener('message', function (request) {
         if (request.data.type === 'letznav_get_element_data') {
-            var element = request.data.element;
-            var updatedElem = updateElementPosition(element);
+            var element = request.data.element.elem;
+            var updatedElem = request.data.element;
+            updatedElem.elem = updateElementPosition(element);
             sendMessageToParentFrame({
                 type: 'letznav_updated_element_data',
-                element: updatedElem
+                element: updatedElem,
+                elementType: request.data.elementType
             })
         }
     }, false);
 }
+
+receiveForMessage();

@@ -24,6 +24,7 @@ function getPlayerHtml() {
                 <div class="letznav-banner-message">letzNav Player</div>
                 <button class="letznav-play-flow-row" data-flowid="1" onclick="playFlow(1)">play Flow 1 </button>
                 <button class="letznav-play-flow-row" data-flowid="2" onclick="playFlow(2)">play Flow 2 </button>
+                <button class="letznav-play-flow-row" data-flowid="2" onclick="playFlow(3)">play iframe flow </button>
             </body>
         </html>
     `;

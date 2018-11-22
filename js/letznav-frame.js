@@ -109,6 +109,55 @@ var flows = [{
                 }
             }
         ]
+    },
+    {
+        id: 3,
+        steps: [{
+                stepId: 7,
+                title: "iframeflow3step1",
+                desc: "This is frameflow3step1",
+                elem: {
+                    selector: '.workflow-title',
+                    iframePath: "http://111.93.27.187:8889/ppmreports/flow.html?_flowId=homeFlow",
+                    position: {
+                        top: "",
+                        left: "",
+                        width: ""
+                    },
+                    identified: false
+                }
+            },
+            {
+                stepId: 5,
+                title: "frameflow3step2",
+                desc: "This is frameflow3step2",
+                elem: {
+                    selector: '#display > div > div > div.body > div > div.homeMain > ul > li:nth-child(3) > div.workflow-container > h2',
+                    iframePath: "http://111.93.27.187:8889/ppmreports/flow.html?_flowId=homeFlow",
+                    position: {
+                        top: "",
+                        left: "",
+                        width: ""
+                    },
+                    identified: false
+                }
+            },
+            {
+                stepId: 6,
+                title: "frameflow3step3",
+                desc: "This is frameflow3step3",
+                elem: {
+                    selector: '#display > div > div > div.body > div > div.homeMain > ul > li:nth-child(5) > div.workflow-container > h2',
+                    iframePath: "http://111.93.27.187:8889/ppmreports/flow.html?_flowId=homeFlow",
+                    position: {
+                        top: "",
+                        left: "",
+                        width: ""
+                    },
+                    identified: false
+                }
+            }
+        ]
     }
 ];
 
@@ -238,22 +287,42 @@ addListeners();
 
 // }
 
-function sendMessageToAllIFrames(toPost) {
-    var iframeWindows = [];
-    var iframeElems = window.top.document.getElementsByTagName("iframe");
-    for (i = 0; i < iframeElems.length; i++) {
-        if (iframeElems[i].contentWindow) {
-            iframeWindows.push(iframeElems[i].contentWindow);
+function getWindows() {
+    var result = [];
+    var stack = [window.top];
+    while (stack && stack.length > 0) {
+        var popWindow = stack.pop();
+        if (popWindow) {
+            result.push(popWindow);
+            var popWindowFrames = popWindow.document.getElementsByTagName('iframe');
+            if (popWindowFrames && popWindowFrames.length) {
+                for (let i = 0; i < popWindowFrames.length; i++) {
+                    if (popWindowFrames[i].contentWindow) {
+                        stack.push(popWindowFrames[i].contentWindow);
+                    }
+                }
+            }
         }
     }
+    return result;
+}
+
+function sendMessageToAllIFrames(toPost) {
+    var iframeWindows = getWindows();
+    // var iframeElems = window.top.document.getElementsByTagName("iframe");
+    // for (i = 0; i < iframeElems.length; i++) {
+    //     if (iframeElems[i].contentWindow) {
+    //         iframeWindows.push(iframeElems[i].contentWindow);
+    //     }
+    // }
     window.top.postMessage(toPost, "*");
     if (iframeWindows.length > 0) {
-        for (let i = iframeElems.length - 1; i >= 0; i--) {
+        for (let i = iframeWindows.length - 1; i >= 0; i--) {
             // tslint:disable-line:prefer-for-of
             try {
-                if (iframeElems[i] && iframeElems[i].postMessage) {
+                if (iframeWindows[i] && iframeWindows[i].postMessage) {
                     //to-do: restrict posting to letznav iframe
-                    iframeElems[i].postMessage(toPost, "*");
+                    iframeWindows[i].postMessage(toPost, "*");
                 }
             } catch (err) {
                 console.warn("Error posting message to iframe: ", err);
@@ -274,3 +343,4 @@ function receiveForMessage() {
 }
 
 receiveForMessage();
+window.isletznavplayerframe = true;

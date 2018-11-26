@@ -56,10 +56,12 @@ function updateElementPosition(elementData, stepId) {
     if ((elementData.iframePath === '' && window.top === window.parent) || elementData.iframePath === currentPath) {
         // if ()
         elementData.checked = true;
-        var sourceElNode = getElement(elementData.selector)
+        var sourceElNode = getElement(elementData.selector);
+        console.info( '&&&style',  sourceElNode.offsetParent === null);
         var boundingRect = getElementBoundingClientRect(sourceElNode);
+        console.info('&&&bounding rect', boundingRect);
         var iframePosition = getIframePosition();
-        if (boundingRect) {
+        if (boundingRect && boundingRect.top>=0 && boundingRect.left>=0) {
             setElemNode(stepId, sourceElNode);
             // elementData.elNode = sourceElNode;
             elementData.position = {

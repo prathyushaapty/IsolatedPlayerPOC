@@ -33,10 +33,13 @@ function getIframePath() {
 function setElemNode(stepId, elementNode) {
     if (window.top['letznav-elements-data']) {
         var existing = window.top['letznav-elements-data'];
-        existing.push({
-            id: stepId,
-            elementNode: elementNode
-        });
+        var isAlreadyPresent = existing.find(data => data.id === stepId);
+        if (!isAlreadyPresent) {
+            existing.push({
+                id: stepId,
+                elementNode: elementNode
+            });
+        }
         window.top['letznav-elements-data'] = existing;
 
     } else {
@@ -50,7 +53,9 @@ function setElemNode(stepId, elementNode) {
 
 function updateElementPosition(elementData, stepId) {
     var currentPath = getIframePath();
-    if (window.top === window.parent || elementData.iframePath === currentPath) {
+    if ((elementData.iframePath === '' && window.top === window.parent) || elementData.iframePath === currentPath) {
+        // if ()
+        elementData.checked = true;
         var sourceElNode = getElement(elementData.selector)
         var boundingRect = getElementBoundingClientRect(sourceElNode);
         var iframePosition = getIframePosition();
@@ -63,6 +68,8 @@ function updateElementPosition(elementData, stepId) {
                 width: boundingRect.width
             };
             elementData.identified = true;
+        } else {
+            elementData.identified = false;
         }
     }
     return elementData;

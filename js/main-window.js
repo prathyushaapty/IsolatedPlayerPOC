@@ -13,6 +13,9 @@ function getPlayerHtml() {
     var cssUrl = chrome.extension.getURL('css/letznav-frame.css');
     var jsUrl = chrome.extension.getURL('js/letznav-frame.js');
     var tetherUrl = chrome.extension.getURL('lib/tether.js');
+    var cddddssUrl = chrome.extension.getURL('polyfills/polyfills.bundle.js');
+    // <script type="text/javascript" src=${cddddssUrl}></script>
+
 
 
     var idxHtml = `
@@ -22,6 +25,7 @@ function getPlayerHtml() {
                 <link rel="stylesheet" href=${cssUrl}> 
                 <script type="text/javascript" src=${jsUrl}></script>
                 <script type="text/javascript" src=${tetherUrl}></script>
+                <script type="text/javascript" src=${cddddssUrl}></script>
             </head>
             <body>
                 <div class="letznav-banner-message">letzNav Player</div>
@@ -48,6 +52,13 @@ function createPlayerPanel() {
     ifmDoc.open();
     ifmDoc.write(idxHtml);
     ifmDoc.close();
+
+    // var cddddssUrl = chrome.extension.getURL('polyfills/polyfills.bundle.js');
+    // var divnode = document.createElement('script');
+    // divnode.setAttribute('src', cddddssUrl);
+    // divnode.setAttribute('type', 'text/javascript')
+    // window.document.head.appendChild(divnode);
+    
 }
 
 if (window.top === window) {

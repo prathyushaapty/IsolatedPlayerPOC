@@ -21,7 +21,7 @@
     "content_security_policy": "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self';",
     "web_accessible_resources": ["*", "letznav-frame.js", "letznav-player.html", "iframe-internal.js"],
     "content_scripts": [{
-        "matches": ["http://111.93.27.187:8889/*"],
+        "matches": ["http://111.93.27.187:8889/*","https://www.concursolutions.com/*"],
         "js": ["js/main-window.js", "js/iframe.js"],
         "css": ["css/main-window.css"],
         "run_at": "document_idle",

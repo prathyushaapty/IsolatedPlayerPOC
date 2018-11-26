@@ -2,6 +2,7 @@ function identifyDomChanges() {
     var observer = new MutationObserver(function (mutations) {
         console.info("**dom change occured");
         addAllBadges();
+        displayStep();
     });
     var config = {
         subtree: true,
@@ -10,6 +11,12 @@ function identifyDomChanges() {
         characterData: true
     };
     observer.observe(window.top.document, config);
+}
+
+function listenForScroll() {
+    window.top.addEventListener("scroll", function() {
+        console.info('**scroll occured');
+    });
 }
 
 var flows = [{
@@ -51,7 +58,7 @@ var flows = [{
                 title: "flow1step3",
                 desc: "This is flow1step3",
                 elem: {
-                    selector: "#ppm_nav_app",
+                    selector: '#portlet-table-7009 > tbody > tr > td > div.ppm_portlet_title_bar > h2',
                     iframePath: "",
                     position: {
                         top: "",
@@ -103,7 +110,7 @@ var flows = [{
                 title: "flow2step3",
                 desc: "This is flow2step3",
                 elem: {
-                    selector: ".ppm_button",
+                    selector: 'input[name="stakeholder3"]',
                     iframePath: "",
                     position: {
                         top: "",
@@ -181,70 +188,100 @@ var badges = [{
         hoverMessage: "This is tooltip 2"
     }
 ];
-var currIdx = 0;
+var currIdx;
 var currentFlowId;
+var currentStepData;
+var prevCurrentStepData;
 var popper;
 var tetherAttached = null;
 
 function playFlow(flowId) {
     currIdx = 0;
     currentFlowId = flowId;
-    displayStep(currIdx);
+    displayStep();
 }
 
-function updateStep(stepData) {
-    // if(popper) {
-    //     popper.destroy();
-    // }
-    if(tetherAttached) {
-    tetherAttached.destroy();
-    tetherAttached = null;
-    }
-    if (stepData.elem.identified) {
-        var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
-        balloonElem.style.display = "block";
-        balloonElem.style.left = stepData.elem.position.left + stepData.elem.position.width + 10 + 'px';
-        balloonElem.style.top = stepData.elem.position.top + 'px';
+function updateStepPosition(balloonElem, elemPosition) {
+    var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
+    balloonElem.style.display = "block";
+    balloonElem.style.left = elemPosition.left + elemPosition.width + 10 + 'px';
+    balloonElem.style.top = elemPosition.top + 'px';
+}
 
-        var balloonHeading = window.top.document.querySelector('.letznav-step-heading');
-        balloonHeading.innerText = stepData.title;
+function updateStep() {
+    const currentStepString = JSON.stringify(currentStepData && currentStepData.elem);
+    const prevStepString = JSON.stringify(prevCurrentStepData && prevCurrentStepData.elem);
+    var equality = currentStepString === prevStepString;
+    console.info('*8equality', currentStepString !== prevStepString)
+    if ( !equality && currentStepData.elem.checked) {
+        if (currentStepData.elem.identified) {
+            var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
+            updateStepPosition(balloonElem, currentStepData.elem.position);
 
-        var balloonDesc = window.top.document.querySelector('.letznav-step-description');
-        balloonDesc.innerText = stepData.desc;
-        
-        // popper = new Popper(stepData.elem.elNode, balloonElem, {
-        //     placement: 'right'
-        // });
-        console.info('element', balloonElem);
-        console.info('**target', stepData.elem.elNode);
-        var letznavElementsData = window.top['letznav-elements-data'];
-        var targetEl = letznavElementsData.find(data => data.id === stepData.stepId);
-        if (targetEl && targetEl.elementNode) {
-            tetherAttached = new Tether({
-                element: balloonElem,
-                target: targetEl && targetEl.elementNode,
-                attachment: 'top left',
-                targetAttachment: 'top right'
-            });
-            currIdx = currIdx + 1;
+            var letznavElementsData = window.top['letznav-elements-data'];
+            var targetEl = letznavElementsData.find(data => data.id === currentStepData.stepId);
+            if (tetherAttached) {
+                try {
+                    tetherAttached.destroy();
+                } catch (Exception) {
+                  console.error(Exception);
+                }
+                tetherAttached = null;
+              }
+            if (targetEl && targetEl.elementNode) {
+                // var popper = new Popper(targetEl.elementNode, balloonElem, {
+                //     placement: 'right-start'
+                // });
+                tetherAttached = new Tether({
+                    element: balloonElem,
+                    target: targetEl && targetEl.elementNode,
+                    attachment: 'top left',
+                    targetAttachment: 'top right'
+                });
+            }
+
+            var balloonHeading = window.top.document.querySelector('.letznav-step-heading');
+            balloonHeading.innerText = currentStepData.title;
+
+            var balloonDesc = window.top.document.querySelector('.letznav-step-description');
+            balloonDesc.innerText = currentStepData.desc;
+
+
+            prevCurrentStepData = currentStepData;
+            // if(tetherAttached) {
+            //     tetherAttached.setOptions({
+            //         element: balloonElem,
+            //         target: targetEl && targetEl.elementNode,
+            //         attachment: 'top left',
+            //         targetAttachment: 'top right'
+            //     });
+            //     tetherAttached.position();
+            // }
+
+        } else if (!currentStepData.elem.identified) {
+            var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
+            balloonElem.style.display = 'none';
         }
     }
 }
 
-function displayStep(idx) {
-    var flowData = flows.find(flow => flow.id === currentFlowId);
-    var stepData = flowData && flowData.steps[idx];
-    if (stepData) {
-        toPost = {
-            type: "letznav_get_element_data",
-            element: stepData,
-            elementType: 'flow-step'
+function displayStep() {
+    if (currIdx === 0 || currIdx) {
+        var flowData = flows.find(flow => flow.id === currentFlowId);
+        var currentStepDataaaa = flowData && flowData.steps[currIdx];
+        if (currentStepDataaaa) {
+            toPost = {
+                type: "letznav_get_element_data",
+                element: currentStepDataaaa,
+                elementType: 'flow-step'
 
-        };
-        sendMessageToAllIFrames(toPost);
-    } else {
-        var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
-        balloonElem.style.display = 'none';
+            };
+            sendMessageToAllIFrames(toPost);
+        }
+         else {
+            var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
+            balloonElem.style.display = 'none';
+        }
     }
 }
 
@@ -288,13 +325,6 @@ function addAllBadges() {
             }
         });
     }
-    // for (var badge of badges) {
-    // var elemToAttach = window.top.document.querySelector(badge.elem);
-    // if (elemToAttach && !window.top.document.querySelector('letznav-badge-added-id')) {
-    //     var elemRect = elemToAttach.getBoundingClientRect();
-    //     attachBadge(badge.id, badge.hoverMessage, elemRect.left, elemRect.top, elemRect.width);
-    // }
-    // }
 }
 
 function addListeners() {
@@ -309,7 +339,9 @@ function addListeners() {
 }
 
 function onNextClick() {
-    displayStep(currIdx);
+    currIdx = currIdx + 1;
+
+    displayStep();
 }
 
 identifyDomChanges();
@@ -370,7 +402,11 @@ function receiveForMessage() {
         if (request.data.type === "letznav_updated_element_data") {
             var elemType = request.data.elementType;
             if (elemType === 'flow-step') {
-                updateStep(request.data.element);
+                var msgObj = request.data.element;
+                if (msgObj.elem.checked) {
+                    currentStepData = msgObj;
+                    updateStep();
+                }
             }
         }
     });
@@ -378,3 +414,4 @@ function receiveForMessage() {
 
 receiveForMessage();
 window.isletznavplayerframe = true;
+listenForScroll();

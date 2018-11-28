@@ -1,6 +1,6 @@
 function qbind(a) { console.log('a'); }
 qbind = qbind.bind();
-console.log(qbind);
+// console.log(qbind);
 
 // Function.prototype.bind = function(b) {
 //   var a = this;

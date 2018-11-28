@@ -19,6 +19,7 @@ function listenForScroll() {
     });
 }
 
+
 var flows = [{
         id: 1,
         steps: [{
@@ -174,6 +175,42 @@ var flows = [{
                 }
             }
         ]
+    }, {
+        id: 4,
+        steps: [
+            {
+                stepId: 10,
+                title: "SFCIframeflow",
+                desc: "This is SFCIframeflowstep1",
+                elem: {
+                    selector: '#getting-started-block > div.panelContent > table > tbody > tr > td:nth-child(2) > div.steps-header',
+                    iframePath: "",
+                    position: {
+                        top: "",
+                        left: "",
+                        width: ""
+                    },
+                    elNode: null,
+                    identified: false
+                }
+            },{
+            stepId: 11,
+            title: "SFCIframeflow",
+            desc: "This is SFCIframeflowstep1",
+            elem: {
+                selector: 'body > div.colmask.threecol > div > div > div.col2 > h2',
+                iframePath: "https://success.salesforce.com/communitySetupModule/",
+                position: {
+                    top: "",
+                    left: "",
+                    width: ""
+                },
+                elNode: null,
+                identified: false
+            }
+        }]
+
+
     }
 ];
 
@@ -360,6 +397,7 @@ function getWindows() {
         var popWindow = stack.pop();
         if (popWindow) {
             result.push(popWindow);
+            try {
             var popWindowFrames = popWindow.document.getElementsByTagName('iframe');
             if (popWindowFrames && popWindowFrames.length) {
                 for (let i = 0; i < popWindowFrames.length; i++) {
@@ -368,6 +406,9 @@ function getWindows() {
                     }
                 }
             }
+        } catch(ex) {
+            console.info('**exception occured', ex);
+        }
         }
     }
     return result;
@@ -384,6 +425,7 @@ function sendMessageToAllIFrames(toPost) {
     window.top.postMessage(toPost, "*");
     if (iframeWindows.length > 0) {
         for (let i = iframeWindows.length - 1; i >= 0; i--) {
+            console.info('hrf', iframeWindows[i]);
             // tslint:disable-line:prefer-for-of
             try {
                 if (iframeWindows[i] && iframeWindows[i].postMessage) {

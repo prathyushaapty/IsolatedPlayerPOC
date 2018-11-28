@@ -21,7 +21,7 @@
     "content_security_policy": "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self';",
     "web_accessible_resources": ["*", "letznav-frame.js", "letznav-player.html", "iframe-internal.js"],
     "content_scripts": [{
-        "matches": ["http://111.93.27.187:8889/*","https://www.concursolutions.com/*"],
+        "matches": ["http://111.93.27.187:8889/*","https://www.concursolutions.com/*", "https://ap4.salesforce.com/*","https://ap4.lightning.force.com/*","https://success.salesforce.com/communitySetupModule/*"],
         "js": ["js/main-window.js", "js/iframe.js"],
         "css": ["css/main-window.css"],
         "run_at": "document_idle",

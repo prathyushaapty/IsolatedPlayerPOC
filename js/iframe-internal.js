@@ -105,3 +105,4 @@ function receiveForMessage() {
 }
 
 receiveForMessage();
+console.info('**in internal iframe', window.location.href);

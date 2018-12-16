@@ -31,38 +31,61 @@ function getIframePath() {
 }
 
 function setElemNode(stepId, elementNode) {
-    if (window.top['letznav-elements-data']) {
-        var existing = window.top['letznav-elements-data'];
-        var isAlreadyPresent = existing.find(data => data.id === stepId);
-        if (!isAlreadyPresent) {
-            existing.push({
+    try {
+        if (window.top['letznav-elements-data']) {
+            var existing = window.top['letznav-elements-data'];
+            var isAlreadyPresent = existing.find(data => data.id === stepId);
+            if (!isAlreadyPresent) {
+                existing.push({
+                    id: stepId,
+                    elementNode: elementNode
+                });
+            }
+            window.top['letznav-elements-data'] = existing;
+
+        } else {
+            window.top['letznav-elements-data'] = [{
                 id: stepId,
                 elementNode: elementNode
-            });
+            }];
+
         }
-        window.top['letznav-elements-data'] = existing;
-
-    } else {
-        window.top['letznav-elements-data'] = [{
-            id: stepId,
-            elementNode: elementNode
-        }];
-
+    } catch (ex) {
+        console.log('error occured', ex);
+        throw new Error();
     }
 }
 
-function updateElementPosition(elementData, stepId) {
+function updateElementPosition(elementData, stepId, iframePosition) {
     var currentPath = getIframePath();
+    console.info('***is main windoww top', window.top === window.parent);
+    console.info('%%%%iframe path is', currentPath, 'parent', window.parent.location.href);
     if ((elementData.iframePath === '' && window.top === window.parent) || elementData.iframePath === currentPath) {
+        console.log('inside');
         // if ()
         elementData.checked = true;
         var sourceElNode = getElement(elementData.selector);
-        console.info( '&&&style',  sourceElNode.offsetParent === null);
+        // console.info( '&&&style',  sourceElNode.offsetParent === null);
         var boundingRect = getElementBoundingClientRect(sourceElNode);
         console.info('&&&bounding rect', boundingRect);
-        var iframePosition = getIframePosition();
+        // var iframePosition = getIframePosition();
         if (boundingRect && boundingRect.top>=0 && boundingRect.left>=0) {
-            setElemNode(stepId, sourceElNode);
+            try {
+                setElemNode(stepId, sourceElNode);
+            } catch (ex) {
+                window.parent.postMessage({
+                    type: "letznav_set_element_node_value_subiframe",
+                    stepId: stepId,
+                    elementData: elementData
+                });
+                // sendMessageToParentFrame({
+                //     type: "letznav_set_element_node_value",
+                //     stepId: stepId,
+                //     elementData: elementData
+                //   });
+
+            }
+
             // elementData.elNode = sourceElNode;
             elementData.position = {
                 top: boundingRect.top + (iframePosition && iframePosition.top || 0),
@@ -90,11 +113,12 @@ function sendMessageToParentFrame(toPost) {
 
 function receiveForMessage() {
     window.addEventListener('message', function (request) {
-        if (request.data.type === 'letznav_get_element_data') {
+        if (request.data.type === 'child_letznav_updated_element_data') {
             var element = request.data.element.elem;
             var stepId = request.data.element.stepId;
+            var iframePosition = request.data.pratposition;
             var updatedElem = request.data.element;
-            updatedElem.elem = updateElementPosition(element, stepId);
+            updatedElem.elem = updateElementPosition(element, stepId, iframePosition);
             sendMessageToParentFrame({
                 type: 'letznav_updated_element_data',
                 element: updatedElem,

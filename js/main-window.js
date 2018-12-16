@@ -32,6 +32,7 @@ function getPlayerHtml() {
                 <button class="letznav-play-flow-row" data-flowid="1" onclick="playFlow(1)">play Flow 1 </button>
                 <button class="letznav-play-flow-row" data-flowid="2" onclick="playFlow(2)">play Flow 2 </button>
                 <button class="letznav-play-flow-row" data-flowid="2" onclick="playFlow(3)">play iframe flow </button>
+                <button class="letznav-play-flow-row" data-flowid="2" onclick="playFlow(4)">SFC flow </button>
             </body>
         </html>
     `;
@@ -39,29 +40,74 @@ function getPlayerHtml() {
 }
 
 function createPlayerPanel() {
-    createBalloonNode();
 
-    var ifm = document.createElement("iframe");
-    ifm.setAttribute("src", "about:blank");
-    ifm.setAttribute("id", "letznav-frame-player");
-    ifm.setAttribute("allowTransparency", true);
-    document.body.appendChild(ifm);
+    if (!document.querySelector('#letznav-frame-player')) {
+        createBalloonNode();
 
-    var idxHtml = getPlayerHtml();
-    var ifmDoc = ifm.contentWindow.document;
-    ifmDoc.open();
-    ifmDoc.write(idxHtml);
-    ifmDoc.close();
+        var script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+        script.setAttribute('src', chrome.extension.getURL('js/window.vars.js'));
+        window.top.document.head.appendChild(script);
+
+        var ifm = document.createElement("iframe");
+        ifm.setAttribute("src", "about:blank");
+        ifm.setAttribute("id", "letznav-frame-player");
+        ifm.setAttribute("allowTransparency", true);
+        document.body.appendChild(ifm);
+
+        var idxHtml = getPlayerHtml();
+        var ifmDoc = ifm.contentWindow.document;
+        ifmDoc.open();
+        ifmDoc.write(idxHtml);
+        ifmDoc.close();
+    }
 
     // var cddddssUrl = chrome.extension.getURL('polyfills/polyfills.bundle.js');
     // var divnode = document.createElement('script');
     // divnode.setAttribute('src', cddddssUrl);
     // divnode.setAttribute('type', 'text/javascript')
     // window.document.head.appendChild(divnode);
-    
+
 }
+
+// function getPrathyushaWindows() {
+//     var result = [];
+//     var stack = [window.top];
+//     while (stack && stack.length > 0) {
+//         var popWindow = stack.pop();
+//         if (popWindow) {
+//             result.push(popWindow);
+//             try {
+//                 var popWindowFrames = popWindow.document.getElementsByTagName('iframe');
+//                 if (popWindowFrames && popWindowFrames.length) {
+//                     for (let i = 0; i < popWindowFrames.length; i++) {
+//                         if (popWindowFrames[i].contentWindow) {
+//                             stack.push(popWindowFrames[i].contentWindow);
+//                         }
+//                     }
+//                 }
+//             } catch (ex) {
+//                 console.info('**exception occured', ex);
+//             }
+//         }
+//     }
+//     return result;
+// }
+
+
 
 if (window.top === window) {
     createPlayerPanel();
-}
+    // setTimeout(function () {
+    //     console.log(allWindows);
+    // }, 5000);
 
+
+
+    // setTimeout(function () {
+    //     var allWindows = getPrathyushaWindows();
+    //     console.log('**allwindowsprathyusha', allWindows);
+    // }, 5000);
+
+
+}

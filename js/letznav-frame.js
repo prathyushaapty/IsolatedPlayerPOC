@@ -1,6 +1,6 @@
 function identifyDomChanges() {
     var observer = new MutationObserver(function (mutations) {
-        console.info("**dom change occured");
+        // console.info("**dom change occured");
         addAllBadges();
         displayStep();
     });
@@ -14,8 +14,8 @@ function identifyDomChanges() {
 }
 
 function listenForScroll() {
-    window.top.addEventListener("scroll", function() {
-        console.info('**scroll occured');
+    window.top.addEventListener("scroll", function () {
+        // console.info('**scroll occured');
     });
 }
 
@@ -174,8 +174,45 @@ var flows = [{
                 }
             }
         ]
+    },
+    {
+        id: 4,
+        steps: [
+            {
+                stepId: 10,
+                title: "SFCIframeflow",
+                desc: "This is SFCIframeflowstep1",
+                elem: {
+                    selector: '#getting-started-block > div.panelContent > table > tbody > tr > td:nth-child(2) > div.steps-header',
+                    iframePath: "",
+                    position: {
+                        top: "",
+                        left: "",
+                        width: ""
+                    },
+                    elNode: null,
+                    identified: false
+                }
+            },{
+            stepId: 11,
+            title: "SFCIframeflow",
+            desc: "This is SFCIframeflowstep1",
+            elem: {
+                selector: 'body > div.custom-doc-outer > div > div > div.slider-small-header > h1',
+                iframePath: "https://appexchange.salesforce.com/setupModule",
+                position: {
+                    top: "",
+                    left: "",
+                    width: ""
+                },
+                elNode: null,
+                identified: false
+            }
+        }]
+
+
     }
-];
+  ];
 
 var badges = [{
         id: 1,
@@ -213,7 +250,7 @@ function updateStep() {
     const prevStepString = JSON.stringify(prevCurrentStepData && prevCurrentStepData.elem);
     var equality = currentStepString === prevStepString;
     console.info('*8equality', currentStepString !== prevStepString)
-    if ( !equality && currentStepData.elem.checked) {
+    if (!equality && currentStepData.elem.checked) {
         if (currentStepData.elem.identified) {
             var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
             updateStepPosition(balloonElem, currentStepData.elem.position);
@@ -224,10 +261,10 @@ function updateStep() {
                 try {
                     tetherAttached.destroy();
                 } catch (Exception) {
-                  console.error(Exception);
+                    console.error(Exception);
                 }
                 tetherAttached = null;
-              }
+            }
             if (targetEl && targetEl.elementNode) {
                 // var popper = new Popper(targetEl.elementNode, balloonElem, {
                 //     placement: 'right-start'
@@ -276,9 +313,8 @@ function displayStep() {
                 elementType: 'flow-step'
 
             };
-            sendMessageToAllIFrames(toPost);
-        }
-         else {
+            sendMessageToMainWindow(toPost);
+        } else {
             var balloonElem = window.top.document.querySelector('.letznav-balloon-step');
             balloonElem.style.display = 'none';
         }
@@ -353,43 +389,62 @@ addListeners();
 
 // }
 
-function getWindows() {
-    var result = [];
-    var stack = [window.top];
-    while (stack && stack.length > 0) {
-        var popWindow = stack.pop();
-        if (popWindow) {
-            result.push(popWindow);
-            var popWindowFrames = popWindow.document.getElementsByTagName('iframe');
-            if (popWindowFrames && popWindowFrames.length) {
-                for (let i = 0; i < popWindowFrames.length; i++) {
-                    if (popWindowFrames[i].contentWindow) {
-                        stack.push(popWindowFrames[i].contentWindow);
-                    }
-                }
-            }
-        }
-    }
-    return result;
+// function getWindows() {
+//     var result = [];
+//     var stack = [{
+//         idVal: null,
+//         wi: window.top
+//     }];
+//     while (stack && stack.length > 0) {
+//         var popWindow = stack.pop();
+//         if (popWindow && popWindow.wi) {
+//             result.push(popWindow);
+//             var popWindowFrames = popWindow.wi.document.getElementsByTagName('iframe');
+//             if (popWindowFrames && popWindowFrames.length) {
+//                 for (let i = 0; i < popWindowFrames.length; i++) {
+//                     if (popWindowFrames[i].contentWindow) {
+
+//                         stack.push({
+//                             idVal: popWindowFrames[i].id,
+//                             wi: popWindowFrames[i].contentWindow
+//                         });
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     return result;
+// }
+
+function sendMessageToMainWindow(toPost) {
+    window.top.postMessage({
+        type: "letznav_update_windows_property",
+        postedMessage: toPost
+    }, "*");
 }
 
-function sendMessageToAllIFrames(toPost) {
-    var iframeWindows = getWindows();
+function sendMessageToAllIFrames(iframeWindows, toPost) {
+    // var iframeWindows = getWindows();
+    // window.top.postMessage()
+    // console.info('**ifwindow', iframeWindows);
     // var iframeElems = window.top.document.getElementsByTagName("iframe");
     // for (i = 0; i < iframeElems.length; i++) {
     //     if (iframeElems[i].contentWindow) {
     //         iframeWindows.push(iframeElems[i].contentWindow);
     //     }
     // }
-    window.top.postMessage(toPost, "*");
-    if (iframeWindows.length > 0) {
+    // console.log('**',  window.top['letznav-all-windows']);
+    // console.log('***ppp',  window.top['prathyusha'] );
+    //     var iframeWindows = window.top['letznav-all-windows'];
+    if (iframeWindows && iframeWindows.length > 0) {
         for (let i = iframeWindows.length - 1; i >= 0; i--) {
             // tslint:disable-line:prefer-for-of
             try {
-                if (iframeWindows[i] && iframeWindows[i].postMessage) {
+                console.log('***sending to href', iframeWindows[i].location.href);
+                // if (iframeWindows[i] && iframeWindows[i].idVal === 'letznav-iframe-script' && iframeWindows[i].wi && iframeWindows[i].wi.postMessage) {
                     //to-do: restrict posting to letznav iframe
                     iframeWindows[i].postMessage(toPost, "*");
-                }
+                // }
             } catch (err) {
                 console.warn("Error posting message to iframe: ", err);
             }
@@ -409,6 +464,21 @@ function receiveForMessage() {
                 }
             }
         }
+        if (request.data.type === 'letznav_all_windows_value') {
+            var iframeWindows = window['letznav-all-windows'];
+            var postedMessage = request.data.postedMessage;
+            sendMessageToAllIFrames(iframeWindows, postedMessage);
+        }
+        if (request.data.type === 'letznav_set_element_node_value') {
+            var inputRequestData = request.data;
+            inputRequestData.type = 'letznav_set_element_node_value_parent';
+            window.top.postMessage(inputRequestData, '*');
+        }
+
+        // if (request.data.type === 'letznavidentifiedWindowValue') {
+        //     var postedMessage = request.data.postedMessage;
+        //     sendMessageToAllIFrames(request.data.accessedValue, postedMessage);
+        // }
     });
 }
 
